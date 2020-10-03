@@ -11,7 +11,12 @@ const DATA = {
     min: 0,
     max: 100000
   },
-  type: ['palace', 'flat', 'house', 'bungalow'],
+  type: {
+    palace: 'Дворец',
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalow: 'Бунгало'
+  },
   rooms: {
     min: 1,
     max: 100
@@ -51,7 +56,7 @@ const getOffer = function (index) {
       title: DATA.title[index],
       address: `${locationX}, ${locationX}`,
       price: getRandomInteger(DATA.price.min, DATA.price.max),
-      type: DATA.type[getRandomInteger(0, DATA.type.length)],
+      type: DATA.type[getRandomInteger(0, Object.keys(DATA.type).length)],
       rooms: getRandomInteger(DATA.rooms.min, DATA.rooms.max),
       guests: getRandomInteger(DATA.guests.min, DATA.guests.max),
       checkin: DATA.checkin[getRandomInteger(0, DATA.checkin.length)],
@@ -77,7 +82,7 @@ const getOffers = function () {
   return array;
 };
 
-getOffers();
+// Pins
 
 const renderPin = function (items) {
   const pinItem = mapTemplate.cloneNode(true);
@@ -105,3 +110,46 @@ const createPins = function () {
 };
 
 createPins();
+
+// Cards
+
+const mapFiltersContainer = document.querySelector('.map__filters-container');
+const cardTemplate = document.querySelector('#card').content;
+
+const renderCard = function (items) {
+  const cardItem = cardTemplate.cloneNode(true);
+  const popupFeatures = cardItem.querySelectorAll(`.popup__features li`);
+  const arrayFeaturesItems = items.offer.features;
+
+  cardItem.querySelector('.popup__title').textContent = items.offer.title;
+  cardItem.querySelector('.popup__text--address').textContent = items.offer.address;
+  cardItem.querySelector('.popup__text--price').textContent = `${items.offer.price}₽/ночь`;
+  cardItem.querySelector('.popup__type').textContent = items.offer.type;
+  cardItem.querySelector('.popup__text--capacity').textContent = `${items.offer.rooms} комнаты для ${items.offer.guests} гостей`;
+  cardItem.querySelector('.popup__text--time').textContent = `Заезд после ${items.offer.checkin}, выезд до ${items.offer.checkout}`;
+
+  for (let i = 0; i < popupFeatures.length; i++) {
+    popupFeatures[i].style.display = 'none';
+
+    if (popupFeatures[i].classList.contains(`popup__feature--${arrayFeaturesItems[i]}`)) {
+      popupFeatures[i].style.display = 'inline-block';
+      popupFeatures[i].textContent = arrayFeaturesItems[i];
+    }
+  }
+
+  cardItem.querySelector('.popup__description').textContent = items.offer.description;
+  cardItem.querySelector('.popup__photos img').src = items.offer.photos;
+
+  return cardItem;
+};
+
+const createCards = function () {
+  const cards = getOffers();
+  const fragmentCard = document.createDocumentFragment();
+
+  fragmentCard.appendChild(renderCard(cards[0]));
+
+  map.insertBefore(fragmentCard, mapFiltersContainer);
+};
+
+createCards();
