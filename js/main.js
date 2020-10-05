@@ -82,8 +82,9 @@ const getOffers = function () {
   return array;
 };
 
-// Pins
+const offers = getOffers();
 
+// Pins
 const renderPin = function (items) {
   const pinItem = mapTemplate.cloneNode(true);
 
@@ -93,13 +94,12 @@ const renderPin = function (items) {
   pinItem.querySelector('.map__pin').style.left = `${pinPositionLeft}px`;
   pinItem.querySelector('.map__pin').style.top = `${pinPositionTop}px`;
   pinItem.querySelector('img').src = items.author.avatar;
-  pinItem.querySelector('img').alt = items.offer.title;
+  pinItem.querySelector('img').alt = items.offer.title; // offers[i].offer.title
 
   return pinItem;
 };
 
 const createPins = function () {
-  const offers = getOffers();
   const fragment = document.createDocumentFragment();
 
   for (let i = 0; i < DATA.amount; i++) {
@@ -112,19 +112,39 @@ const createPins = function () {
 createPins();
 
 // Cards
-
 const mapFiltersContainer = document.querySelector('.map__filters-container');
 const cardTemplate = document.querySelector('#card').content;
+const cardItem = cardTemplate.cloneNode(true);
+
+const popupFeatures = cardItem.querySelector(`.popup__features`);
+const popupPhotos = cardItem.querySelector('.popup__photos');
+const popupPhoto = cardItem.querySelector('.popup__photo');
+
+const createFeatures = function () {
+  const arrayFeaturesItems = offers[0].offer.features;
+  popupFeatures.innerHTML = ``;
+
+  for (let i = 0; i < arrayFeaturesItems.length; i++) {
+    const element = document.createElement(`li`);
+    element.classList.add(`popup__feature`);
+    element.classList.add(`popup__feature--${arrayFeaturesItems[i]}`);
+    element.textContent = arrayFeaturesItems[i];
+    popupFeatures.appendChild(element);
+  }
+};
+
+const createPhotos = function () {
+  popupPhotos.innerHTML = ``;
+
+  for (let i = 0; i < offers[0].offer.photos.length; i++) {
+    const photo = popupPhoto.cloneNode(true);
+
+    photo.src = offers[0].offer.photos[i];
+    popupPhotos.appendChild(photo);
+  }
+};
 
 const renderCard = function (item) {
-  const cardItem = cardTemplate.cloneNode(true);
-
-  const popupFeatures = cardItem.querySelector(`.popup__features`);
-  const arrayFeaturesItems = item.offer.features;
-
-  const popupPhotos = cardItem.querySelector('.popup__photos');
-  const popupPhoto = cardItem.querySelector('.popup__photo');
-
   cardItem.querySelector('.popup__title').textContent = item.offer.title;
   cardItem.querySelector('.popup__text--address').textContent = item.offer.address;
   cardItem.querySelector('.popup__text--price').textContent = `${item.offer.price}₽/ночь`;
@@ -132,44 +152,17 @@ const renderCard = function (item) {
   cardItem.querySelector('.popup__text--capacity').textContent = `${item.offer.rooms} комнаты для ${item.offer.guests} гостей`;
   cardItem.querySelector('.popup__text--time').textContent = `Заезд после ${item.offer.checkin}, выезд до ${item.offer.checkout}`;
 
-  const createFeatures = function () {
-    const featuresList = document.createDocumentFragment();
-
-    for (let i = 0; i < arrayFeaturesItems.length; i++) {
-      const element = document.createElement(`li`);
-      element.classList.add(`popup__feature`);
-      element.classList.add(`popup__feature--${arrayFeaturesItems[i]}`);
-      element.textContent = arrayFeaturesItems[i];
-      featuresList.appendChild(element);
-    }
-
-    popupFeatures.innerHTML = ``;
-    popupFeatures.appendChild(featuresList);
-  };
-
   createFeatures();
 
   cardItem.querySelector('.popup__description').textContent = item.offer.description;
 
-  for (let i = 0; i < DATA.photos.length; i++) {
-    const photo = popupPhoto.cloneNode(true);
-
-    photo.src = DATA.photos[i];
-    popupPhotos.appendChild(photo);
-  }
-
-  popupPhotos.removeChild(popupPhoto);
+  createPhotos();
 
   return cardItem;
 };
 
-const createCards = function () {
-  const cards = getOffers();
-  const fragmentCard = document.createDocumentFragment();
-
-  fragmentCard.appendChild(renderCard(cards[0]));
-
-  map.insertBefore(fragmentCard, mapFiltersContainer);
+const createCard = function () {
+  map.insertBefore(renderCard(offers[0]), mapFiltersContainer);
 };
 
-createCards();
+createCard();
