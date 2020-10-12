@@ -1,11 +1,13 @@
 'use strict';
 
-// const PIN_OFFSET_X = 25;
-// const PIN_OFFSET_Y = 70;
+const PIN_OFFSET_X = 25;
+const PIN_OFFSET_Y = 70;
 
+const MAIN_PIN_WIDTH = 62;
+const MAIN_PIN_HEIGHT = 62;
 const MAIN_PIN_ARROW = 22;
 
-/* const DATA = {
+const DATA = {
   amount: 8,
   avatar: ['01', '02', '03', '04', '05', '06', '07', '08'],
   title: ['Заголовок предложения 1', 'Заголовок предложения 2', 'Заголовок предложения 3', 'Заголовок предложения 4', 'Заголовок предложения 5', 'Заголовок предложения 6', 'Заголовок предложения 7', 'Заголовок предложения 8'],
@@ -32,20 +34,20 @@ const MAIN_PIN_ARROW = 22;
   features: ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'],
   descriptions: [`Cтрока с описанием 1`, `Cтрока с описанием 2`, `Cтрока с описанием 3`, `Cтрока с описанием 4`, `Cтрока с описанием 5`, `Cтрока с описанием 6`, `Cтрока с описанием 7`, `Cтрока с описанием 8`],
   photos: [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`],
-}; */
+};
 
-/* const getRandomInteger = function (min, max) {
+const getRandomInteger = function (min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
-}; */
+};
 
 const map = document.querySelector(`.map`);
 
-// const mapPins = document.querySelector(`.map__pins`);
-// const mapTemplate = document.querySelector(`#pin`).content;
+const mapPins = document.querySelector(`.map__pins`);
+const mapTemplate = document.querySelector(`#pin`).content;
 
-/* const getOffer = function (index) {
+const getOffer = function (index) {
   const locationX = getRandomInteger(50, 1150);
   const locationY = getRandomInteger(130, 630);
 
@@ -71,9 +73,9 @@ const map = document.querySelector(`.map`);
       y: locationY
     }
   };
-}; */
+};
 
-/* const getOffers = function () {
+const getOffers = function () {
   const array = [];
 
   for (let i = 0; i < DATA.amount; i++) {
@@ -81,12 +83,12 @@ const map = document.querySelector(`.map`);
   }
 
   return array;
-}; */
+};
 
-// const offers = getOffers();
+const offers = getOffers();
 
 // Pins
-/* const renderPin = function (items) {
+const renderPin = function (items) {
   const pinItem = mapTemplate.cloneNode(true);
 
   const pinPositionLeft = parseInt(`${items.location.x} + ${PIN_OFFSET_X}`, 10);
@@ -98,9 +100,9 @@ const map = document.querySelector(`.map`);
   pinItem.querySelector(`img`).alt = items.offer.title; // offers[i].offer.title
 
   return pinItem;
-}; */
+};
 
-/* const createPins = function () {
+const createPins = function () {
   const fragment = document.createDocumentFragment();
 
   for (let i = 0; i < DATA.amount; i++) {
@@ -108,9 +110,7 @@ const map = document.querySelector(`.map`);
   }
 
   mapPins.appendChild(fragment);
-}; */
-
-// createPins();
+};
 
 // Cards
 // const mapFiltersContainer = document.querySelector(`.map__filters-container`);
@@ -211,17 +211,20 @@ setDisableForm(mapFormFieldset);
     const mainPinLeftCoord = Math.ceil(parseInt(element.style.left, 10) + mainPinWidthHalf);
     const mainPinTopCoord = Math.ceil(parseInt(element.style.top, 10) + mainPinHeightHalf + gap);
 
-    return `${mainPinLeftCoord}, ${mainPinTopCoord}`;
+    inputAddress.value = `${mainPinLeftCoord}, ${mainPinTopCoord}`;
   };
 
-  inputAddress.value = getElementCoords(mainPin, 0);
+  getElementCoords(mainPin, 0);
 
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
-    setActivePage();
+    if (evt.button === 0) {
+      setActivePage();
+      getElementCoords(mainPin, MAIN_PIN_ARROW);
 
-    inputAddress.value = getElementCoords(mainPin, MAIN_PIN_ARROW);
+      createPins();
+    }
 
     let startCoords = {
       x: evt.clientX,
@@ -231,7 +234,14 @@ setDisableForm(mapFormFieldset);
     const onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
 
-      const shift = {
+      let limits = {
+        top: map.offsetTop,
+        right: map.offsetWidth + map.offsetLeft,
+        bottom: map.offsetHeight + map.offsetTop,
+        left: map.offsetLeft
+      };
+
+      let shift = {
         x: startCoords.x - moveEvt.clientX,
         y: startCoords.y - moveEvt.clientY
       };
@@ -241,11 +251,29 @@ setDisableForm(mapFormFieldset);
         y: moveEvt.clientY
       };
 
+      if (moveEvt.pageX < limits.left) {
+        startCoords.x = limits.left;
+      } else if (moveEvt.pageX > limits.right) {
+        startCoords.x = limits.right;
+      }
+
+      if (moveEvt.pageY > limits.bottom) {
+        startCoords.y = limits.bottom;
+      } else if (moveEvt.pageY > limits.top) {
+        startCoords.y = limits.top;
+      }
+
+      relocate(startCoords);
+
+      function relocate(startCoords) {
+        mainPin.style.top = startCoords.y + 'px';
+        mainPin.style.left = startCoords.x + 'px';
+      }
+
       mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
       mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
 
-      inputAddress.value = getElementCoords(mainPin, MAIN_PIN_ARROW);
-
+      getElementCoords(mainPin, MAIN_PIN_ARROW);
     };
 
     const onMouseUp = function (upEvt) {
@@ -262,6 +290,9 @@ setDisableForm(mapFormFieldset);
   mainPin.addEventListener('keydown', function (evt) {
     if (evt.key === 'Enter') {
       setActivePage();
+      getElementCoords(mainPin, MAIN_PIN_ARROW);
+
+      createPins();
     }
   });
 })();
