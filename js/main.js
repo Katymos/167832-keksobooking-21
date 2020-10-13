@@ -7,6 +7,9 @@ const MAIN_PIN_WIDTH = 62;
 const MAIN_PIN_HEIGHT = 62;
 const MAIN_PIN_ARROW = 22;
 
+const ENTER_BTN = 'Enter';
+const LEFT_BTN = 0;
+
 const DATA = {
   amount: 8,
   avatar: ['01', '02', '03', '04', '05', '06', '07', '08'],
@@ -219,7 +222,7 @@ setDisableForm(mapFormFieldset);
   mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
-    if (evt.button === 0) {
+    if (evt.button === LEFT_BTN) {
       setActivePage();
       getElementCoords(mainPin, MAIN_PIN_ARROW);
 
@@ -234,11 +237,11 @@ setDisableForm(mapFormFieldset);
     const onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
 
-      let limits = {
+      const limitsMapSize = {
         top: map.offsetTop,
-        right: map.offsetWidth + map.offsetLeft,
-        bottom: map.offsetHeight + map.offsetTop,
-        left: map.offsetLeft
+        right: map.offsetWidth - MAIN_PIN_WIDTH,
+        bottom: map.offsetHeight - MAIN_PIN_HEIGHT,
+        left: map.offsetLeft - MAIN_PIN_WIDTH
       };
 
       let shift = {
@@ -251,27 +254,20 @@ setDisableForm(mapFormFieldset);
         y: moveEvt.clientY
       };
 
-      if (moveEvt.pageX < limits.left) {
-        startCoords.x = limits.left;
-      } else if (moveEvt.pageX > limits.right) {
-        startCoords.x = limits.right;
+      if ((mainPin.offsetLeft - shift.x) < limitsMapSize.left) {
+        mainPin.style.left = limitsMapSize.left + 'px';
+      } else if ((mainPin.offsetLeft - shift.x) > limitsMapSize.right) {
+        mainPin.style.left = limitsMapSize.right + 'px';
       }
 
-      if (moveEvt.pageY > limits.bottom) {
-        startCoords.y = limits.bottom;
-      } else if (moveEvt.pageY > limits.top) {
-        startCoords.y = limits.top;
+      if ((mainPin.offsetTop - shift.y) < limitsMapSize.top) {
+        mainPin.style.top = limitsMapSize.top + 'px';
+      } else if ((mainPin.offsetTop - shift.y) > limitsMapSize.bottom) {
+        mainPin.style.top = limitsMapSize.bottom + 'px';
       }
 
-      relocate(startCoords);
-
-      function relocate(startCoords) {
-        mainPin.style.top = startCoords.y + 'px';
-        mainPin.style.left = startCoords.x + 'px';
-      }
-
-      mainPin.style.top = (mainPin.offsetTop - shift.y) + 'px';
       mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
+      mainPin.style.top = (mainPin.offsetTop - shift.y)  + 'px';
 
       getElementCoords(mainPin, MAIN_PIN_ARROW);
     };
@@ -279,16 +275,16 @@ setDisableForm(mapFormFieldset);
     const onMouseUp = function (upEvt) {
       upEvt.preventDefault();
 
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener(`mousemove`, onMouseMove);
+      document.removeEventListener(`mouseup`, onMouseUp);
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener(`mousemove`, onMouseMove);
+    document.addEventListener(`mouseup`, onMouseUp);
   });
 
-  mainPin.addEventListener('keydown', function (evt) {
-    if (evt.key === 'Enter') {
+  mainPin.addEventListener(`keydown`, function (evt) {
+    if (evt.key === ENTER_BTN) {
       setActivePage();
       getElementCoords(mainPin, MAIN_PIN_ARROW);
 
@@ -314,7 +310,6 @@ const setDisabledElements = function () {
   const capacityOptions = Array.from(capacity.options);
 
   capacityOptions.forEach(function (elem) {
-
     elem.disabled = !roomSettings[rooms.value].includes(elem.value); // [1,2,3].includes(это значение попадает в значение или нет)
     elem.selected = !elem.disabled;
   });
@@ -322,6 +317,6 @@ const setDisabledElements = function () {
 
 setDisabledElements();
 
-rooms.addEventListener('change', function () {
+rooms.addEventListener(`change`, function () {
   setDisabledElements();
 });
