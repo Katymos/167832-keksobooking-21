@@ -7,22 +7,22 @@ const MAIN_PIN_WIDTH = 62;
 const MAIN_PIN_HEIGHT = 62;
 const MAIN_PIN_ARROW = 22;
 
-const ENTER_BTN = 'Enter';
+const ENTER_BTN = `Enter`;
 const LEFT_BTN = 0;
 
 const DATA = {
   amount: 8,
-  avatar: ['01', '02', '03', '04', '05', '06', '07', '08'],
-  title: ['Заголовок предложения 1', 'Заголовок предложения 2', 'Заголовок предложения 3', 'Заголовок предложения 4', 'Заголовок предложения 5', 'Заголовок предложения 6', 'Заголовок предложения 7', 'Заголовок предложения 8'],
+  avatar: [`01`, `02`, `03`, `04`, `05`, `06`, `07`, `08`],
+  title: [`Заголовок предложения 1`, `Заголовок предложения 2`, `Заголовок предложения 3`, `Заголовок предложения 4`, `Заголовок предложения 5`, `Заголовок предложения 6`, `Заголовок предложения 7`, `Заголовок предложения 8`],
   price: {
     min: 0,
     max: 100000
   },
   type: {
-    palace: 'Дворец',
-    flat: 'Квартира',
-    house: 'Дом',
-    bungalow: 'Бунгало'
+    palace: `Дворец`,
+    flat: `Квартира`,
+    house: `Дом`,
+    bungalow: `Бунгало`
   },
   rooms: {
     min: 1,
@@ -32,9 +32,9 @@ const DATA = {
     min: 0,
     max: 100
   },
-  checkin: ['12:00', '13:00', '14:00'],
-  checkout: ['12:00', '13:00', '14:00'],
-  features: ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'],
+  checkin: [`12:00`, `13:00`, `14:00`],
+  checkout: [`12:00`, `13:00`, `14:00`],
+  features: [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`],
   descriptions: [`Cтрока с описанием 1`, `Cтрока с описанием 2`, `Cтрока с описанием 3`, `Cтрока с описанием 4`, `Cтрока с описанием 5`, `Cтрока с описанием 6`, `Cтрока с описанием 7`, `Cтрока с описанием 8`],
   photos: [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`],
 };
@@ -100,7 +100,7 @@ const renderPin = function (items) {
   pinItem.querySelector(`.map__pin`).style.left = `${pinPositionLeft}px`;
   pinItem.querySelector(`.map__pin`).style.top = `${pinPositionTop}px`;
   pinItem.querySelector(`img`).src = items.author.avatar;
-  pinItem.querySelector(`img`).alt = items.offer.title; // offers[i].offer.title
+  pinItem.querySelector(`img`).alt = items.offer.title;
 
   return pinItem;
 };
@@ -210,6 +210,13 @@ setDisableForm(mapFormFieldset);
   const mainPinWidthHalf = mainPin.offsetWidth / 2;
   const mainPinHeightHalf = mainPin.offsetHeight / 2;
 
+  const limitsMapSize = {
+    top: map.offsetTop,
+    right: map.offsetWidth - MAIN_PIN_WIDTH,
+    bottom: map.offsetHeight - MAIN_PIN_HEIGHT,
+    left: map.offsetLeft - MAIN_PIN_WIDTH
+  };
+
   const getElementCoords = function (element, gap) {
     const mainPinLeftCoord = Math.ceil(parseInt(element.style.left, 10) + mainPinWidthHalf);
     const mainPinTopCoord = Math.ceil(parseInt(element.style.top, 10) + mainPinHeightHalf + gap);
@@ -219,7 +226,7 @@ setDisableForm(mapFormFieldset);
 
   getElementCoords(mainPin, 0);
 
-  mainPin.addEventListener('mousedown', function (evt) {
+  mainPin.addEventListener(`mousedown`, function (evt) {
     evt.preventDefault();
 
     if (evt.button === LEFT_BTN) {
@@ -237,13 +244,6 @@ setDisableForm(mapFormFieldset);
     const onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
 
-      const limitsMapSize = {
-        top: map.offsetTop,
-        right: map.offsetWidth - MAIN_PIN_WIDTH,
-        bottom: map.offsetHeight - MAIN_PIN_HEIGHT,
-        left: map.offsetLeft - MAIN_PIN_WIDTH
-      };
-
       let shift = {
         x: startCoords.x - moveEvt.clientX,
         y: startCoords.y - moveEvt.clientY
@@ -255,19 +255,19 @@ setDisableForm(mapFormFieldset);
       };
 
       if ((mainPin.offsetLeft - shift.x) < limitsMapSize.left) {
-        mainPin.style.left = limitsMapSize.left + 'px';
+        mainPin.style.left = limitsMapSize.left + `px`;
       } else if ((mainPin.offsetLeft - shift.x) > limitsMapSize.right) {
-        mainPin.style.left = limitsMapSize.right + 'px';
+        mainPin.style.left = limitsMapSize.right + `px`;
       }
 
       if ((mainPin.offsetTop - shift.y) < limitsMapSize.top) {
-        mainPin.style.top = limitsMapSize.top + 'px';
+        mainPin.style.top = limitsMapSize.top + `px`;
       } else if ((mainPin.offsetTop - shift.y) > limitsMapSize.bottom) {
-        mainPin.style.top = limitsMapSize.bottom + 'px';
+        mainPin.style.top = limitsMapSize.bottom + `px`;
       }
 
-      mainPin.style.left = (mainPin.offsetLeft - shift.x) + 'px';
-      mainPin.style.top = (mainPin.offsetTop - shift.y)  + 'px';
+      mainPin.style.left = (mainPin.offsetLeft - shift.x) + `px`;
+      mainPin.style.top = (mainPin.offsetTop - shift.y) + `px`;
 
       getElementCoords(mainPin, MAIN_PIN_ARROW);
     };
@@ -300,17 +300,17 @@ const rooms = adForm.querySelector(`#room_number`);
 // Capacity
 const capacity = adForm.querySelector(`#capacity`);
 const roomSettings = {
-  1: ['1'],
-  2: ['1', '2'],
-  3: ['1', '2', '3'],
-  100: ['0']
+  1: [`1`],
+  2: [`1`, `2`],
+  3: [`1`, `2`, `3`],
+  100: [`0`]
 };
 
 const setDisabledElements = function () {
   const capacityOptions = Array.from(capacity.options);
 
   capacityOptions.forEach(function (elem) {
-    elem.disabled = !roomSettings[rooms.value].includes(elem.value); // [1,2,3].includes(это значение попадает в значение или нет)
+    elem.disabled = !roomSettings[rooms.value].includes(elem.value);
     elem.selected = !elem.disabled;
   });
 };
