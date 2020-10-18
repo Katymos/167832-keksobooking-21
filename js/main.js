@@ -266,8 +266,8 @@ setDisableForm(mapFormFieldset);
     setPinsDataAttributes();
 
     for (let i = 0; i < mapPinItems.length; i++) {
-      mapPinItems[i].addEventListener(`click`, function (evt) {
-        const pinButton = evt.target.closest(`.map__pin`);
+      mapPinItems[i].addEventListener(`click`, function (e) {
+        const pinButton = e.target.closest(`.map__pin`);
         const pinId = pinButton.dataset.id;
 
         /* if (pinButton.classList.contains(`map__pin--main`)) {
