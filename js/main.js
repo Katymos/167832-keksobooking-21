@@ -242,9 +242,9 @@ setDisableForm(mapFormFieldset);
   mainPin.addEventListener(`mousedown`, function (evt) {
     evt.preventDefault();
 
-    if (!map.classList.contains(`map--faded`)) {
+    /* if (!map.classList.contains(`map--faded`)) {
       return false;
-    }
+    } */
 
     if (evt.button === LEFT_BTN) {
       setActivePage();
@@ -269,9 +269,9 @@ setDisableForm(mapFormFieldset);
         const pinButton = evt.target.closest(`.map__pin`);
         const pinId = pinButton.dataset.id;
 
-        if (pinButton.classList.contains(`map__pin--main`)) {
+        /* if (pinButton.classList.contains(`map__pin--main`)) {
           return false;
-        }
+        } */
 
         hideCards();
         createCard(pinId);
