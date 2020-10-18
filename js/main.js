@@ -100,6 +100,7 @@ const renderPin = function (item) {
 
   pinItem.querySelector(`.map__pin`).style.left = `${pinPositionLeft}px`;
   pinItem.querySelector(`.map__pin`).style.top = `${pinPositionTop}px`;
+
   pinItem.querySelector(`img`).src = item.author.avatar;
   pinItem.querySelector(`img`).alt = item.offer.title;
 
@@ -366,7 +367,7 @@ const setDisabledElements = function () {
   const capacityOptions = Array.from(capacity.options);
 
   capacityOptions.forEach(function (elem) {
-    elem.disabled = !roomSettings[rooms.value].includes(elem.value); // [1,2,3].includes(это значение попадает в значение или нет)
+    elem.disabled = !roomSettings[rooms.value].includes(elem.value);
     elem.selected = !elem.disabled;
   });
 };
